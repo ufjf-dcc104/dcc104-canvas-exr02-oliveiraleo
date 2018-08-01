@@ -63,19 +63,48 @@ function start() {
 	var shots = []; var shoot = false;
 	var shots2 = []; var shoot2 = false;
 
-	var shooter1 = new Shooter({x: WIDTH/2, y: HEIGHT/6}, {w: 20, h: 35}, "black", 2*Math.PI, ctx);
-  var shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI, ctx);
+	var shooter1 = new Shooter({x: WIDTH/2, y: HEIGHT/6}, {w: 20, h: 35}, "black", 2*Math.PI);
+  var shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
 	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.h), 0, 325, 12, 1);
   var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
 
-	var verificaPontos1 = false;
-	var verificaPontos2 = false;
+	var bots = [];//inimigos
+
+	for(var i = 0; i < 10; i++){//zera o vetor
+		bots[i] = 0;
+	}
+
+	var bar = { pos: new Point(75, 7), size: new Size(410, 15), energy: 1.0 };
+
+	//var verificaPontos1 = false; //remover depois
+	//var verificaPontos2 = false;
 
 	var recomeca = true;
 	var verificaInicio = false;
 
 	var msgInicio = new Text("Courier", 30, "black");
 	var msg = new Text("Courier", 25, "black");
+
+	//define uma coordenada para o respawn do bot
+	function spawna(){
+		for(var i = 0; i < 10; i++){
+			shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
+			bots.push(shooter2);
+		}
+	}
+
+	function atira(){
+		ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
+		ball2.setVelocityVector(shooter2.center); // ajusta a velocidade da bala
+		shots2.push(ball2); // adiciona a bala no vetor de tiros
+		ball2 = null; // apaga a bala auxiliar
+		shoot2 = true;// bloqueia a repeticao do tiro
+	}
+
+	function carrega(){
+		ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
+		shoot2 = false;
+	}
 
 	//reset do jogo
 	function reset() {
@@ -84,26 +113,22 @@ function start() {
 		shots.length = 0;
 		shots2.length = 0;
 		if(!recomeca){
-			if (verificaInicio) {
-				if (ganhador == 1){
-					msg.raster(ctx, "Player 1 ganhou!", WIDTH/8, HEIGHT/4);
-				}if (ganhador == 2){
-					msg.raster(ctx, "Player 2 ganhou!", WIDTH/8, HEIGHT-HEIGHT/3);
-				}
-				msg.raster(ctx, "Apertem R para continuar", WIDTH/6, HEIGHT/2 );
+				msg.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
+				msg.raster(ctx, "Aperte R para continuar", WIDTH/6, HEIGHT/2 );
 			}
-		}
+		//}
 		verificaInicio = true;
 		//reposiciona as naves
-		var spaw = WIDTH*Math.random()*Math.random();
+		var spawn = WIDTH*Math.random()*Math.random();
 
 
 		shooter1.center = {x: WIDTH/2, y: HEIGHT/6};
-		shooter2.center = {x: spaw/Math.random(), y: 0};
+		shooter2.center = {x: spawn/Math.random(), y: 0};
 
 		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
     shooter2.reset();//volta as propriedades do shooter ao padrao do inicio
 		ganhador = 0;
+		bar.energy = 1.0;
 	}; reset();
 	//regra do jogo
 	var loop = function() {
@@ -111,28 +136,60 @@ function start() {
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
 		//texto da tela do jogo
-		texto.raster(ctx, "Player 1", 17, 20);
+		//texto.raster(ctx, "Player 1", 17, 20);
+		texto.raster(ctx, "Vida:", 10, 20);
 		texto.raster(ctx, "Pontos: " + shooter1.pontos, 10, 40);
-		texto.raster(ctx, "Vidas:" + shooter1.life, 10, 60);
+
+
+		//controle visual da barra de vida
+		ctx.strokeStyle = "#a0afa1";//Controla a borda
+		if(bar.energy<=0.2){//Controla a cor
+			texto.raster(ctx, "Vida baixa!", bar.size.w/2, 20);
+			ctx.fillStyle = "#ff1000";
+		}else if(bar.energy>0.2 && bar.energy<=0.4){
+			ctx.fillStyle = "#a51309";
+		}else if(bar.energy>0.4 && bar.energy<=0.7){
+			ctx.fillStyle = "#e1ff00";
+		}else if(bar.energy>0.7 && bar.energy<=0.9){
+			ctx.fillStyle = "#ff9000";
+		}else {
+			ctx.fillStyle = "#00ff15";
+		}
+
+
+		ctx.fillRect(bar.pos.x, bar.pos.y, bar.energy * bar.size.w, bar.size.h);
+    ctx.strokeRect(bar.pos.x, bar.pos.y, bar.size.w, bar.size.h);
 
 		/*texto2.raster(ctx, "Player 2", WIDTH-105, 20);
 		texto2.raster(ctx, "Pontos: " + shooter2.pontos, WIDTH-110, 40);
 		texto2.raster(ctx, "Vidas:" + shooter2.life, WIDTH-100, 60);*/
 
-		//for(var i = 0; i < 10; i++){
-			//shooter2
-		//}
+
+		//shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
 
 
-		//Verifica colisao
+		if(bots.length <= 0){
+		spawna();
+		}
+
+		/*for(var i = 0; i < bots.length; i++){
+			if(bots[i].center.y>HEIGHT){
+				boots.splice(i, 1);
+			}
+		}*/
+		//limita o bot na tela
+		if(shooter2.center.y > HEIGHT){
+			shooter2.center.y = 0;
+		}
+
+
+		//Verifica colisao dos tiros
+		//do player
 		for(var i = 0; i < shots.length; i++){
 			if(((shots[i].pos.x >= shooter2.center.x-shooter2.size.w) && (shots[i].pos.x <= shooter2.center.x+shooter2.size.w)) &&
-			((shots[i].pos.y >= shooter2.center.y-shooter2.size.h) && (shots[i].pos.y <= shooter2.center.y+shooter2.size.h)) &&
-			!verificaPontos1){
-				verificaPontos1 = true;
-				if(verificaPontos1){
-					shooter2.life--;
-				}
+			((shots[i].pos.y >= shooter2.center.y-shooter2.size.h) && (shots[i].pos.y <= shooter2.center.y+shooter2.size.h))) {
+				shooter2.life--;
+				shooter2.center.y = 0;
 				shots.splice(i, 1);//apaga os tiros que colidiram
 			}
 		}
@@ -140,20 +197,19 @@ function start() {
 			shooter1.pontos++;
 			shooter2.reset();
 		}
+		//dos bots
 		for(var i = 0; i < shots2.length; i++){
 			if(((shots2[i].pos.x >= shooter1.center.x-shooter1.size.w) && (shots2[i].pos.x <= shooter1.center.x+shooter1.size.w)) &&
-			((shots2[i].pos.y >= shooter1.center.y-shooter1.size.h) && (shots2[i].pos.y <= shooter1.center.y+shooter1.size.h)) &&
-			!verificaPontos2){
-				verificaPontos2 = true;
-				if(verificaPontos2){
-					shooter1.life--;
-				}
+			((shots2[i].pos.y >= shooter1.center.y-shooter1.size.h) && (shots2[i].pos.y <= shooter1.center.y+shooter1.size.h))){
+				//shooter1.life--;
+				bar.energy -= 1/10;
+				shots2.splice(i, 1);//apaga os tiros que colidiram
 			}
 		}
-		if (shooter1.life <= 0) {
+		/*if (shooter1.life <= 0) {
 			shooter2.pontos++;
 			shooter1.reset();
-		}
+		}*/
 		//contadores para o for do tiro
 		var cont, cont2;
 		//tiros player 1
@@ -162,7 +218,7 @@ function start() {
 			//Apaga os tiros que saem da tela
 			if(shots[cont].pos.y < 0 || shots[cont].pos.x < 0 || shots[cont].pos.x > WIDTH || shots[cont].pos.y > HEIGHT){// impõe limites
 				shots.splice(cont, 1);// remove o tiro do vetor
-				verificaPontos1 = false;// liga novamente o contador
+				//verificaPontos1 = false;// liga novamente o contador
 			}
 		}
 		//tiros player 2
@@ -171,7 +227,7 @@ function start() {
 			//Apaga os tiros que saem da tela
 			if(shots2[cont2].pos.y < 0 || shots2[cont2].pos.x < 0 || shots2[cont2].pos.x > WIDTH || shots2[cont2].pos.y > HEIGHT){// impõe limites
 				shots2.splice(cont2, 1);// remove o tiro do vetor
-				verificaPontos2 = false;// liga novamente o contador
+			//verificaPontos2 = false;// liga novamente o contador
 			}
 		}
 		//Movimenta as naves
@@ -185,7 +241,12 @@ function start() {
 		shooter1.draw(ctx);
 		shooter2.draw(ctx);
 
-		if (shooter1.pontos >= PTSMAX || shooter2.pontos >= PTSMAX) { // fim de jogo
+		if(bar.energy <= 0.0){// fim de jogo
+			recomeca = false;
+			reset();
+		}
+
+		/*if (shooter1.pontos >= PTSMAX || shooter2.pontos >= PTSMAX) { // fim de jogo
 			//verifica quem ganhou
 			if (shooter1.pontos >= PTSMAX) {
 				ganhador = 1;
@@ -194,12 +255,12 @@ function start() {
 			}
 			recomeca = false;
 			reset();
-		}
+		}*/
 	}else if(!inicio){// exibe a mensagem da tela inicial
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
-		msgInicio.raster(ctx, "Apertem ENTER para começar", 25, HEIGHT/2 );
+		msgInicio.raster(ctx, "Aperte ENTER para começar", 25, HEIGHT/2 );
 	}else if(pause){// exibe a mensagem de jogo pausado
-		msg.raster(ctx, "Apertem P para continuar", (WIDTH/6), HEIGHT/2 );
+		msg.raster(ctx, "Aperte P para continuar", (WIDTH/6), HEIGHT/2 );
 	}
 }
 
@@ -249,15 +310,11 @@ function start() {
 		if (e.keyCode == 68) {// D
 			shooter2.vx = 100;
 			e.preventDefault();
-		}
-		if (e.keyCode == 16){// Shift Esq
-			ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
-			ball2.setVelocityVector(shooter2.center); // ajusta a velocidade da bala
-			shots2.push(ball2); // adiciona a bala no vetor de tiros
-			ball2 = null; // apaga a bala auxiliar
-			shoot2 = true;// bloqueia a repeticao do tiro
-			e.preventDefault();
 		}*/
+		if (e.keyCode == 16){// Shift Esq
+			atira();
+			e.preventDefault();
+		}
 	});
 
 	addEventListener("keyup", function(e){
@@ -278,10 +335,9 @@ function start() {
 		}
 		if (e.keyCode == 65 || e.keyCode == 68) {// A e D
 			shooter2.vx = 0;
-		}
-		if (e.keyCode == 16) {// Shift Esq
-			ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
-			shoot2 = false;
 		}*/
+		if (e.keyCode == 16) {// Shift Esq
+			carrega();
+		}
 	});
 }

@@ -7,6 +7,17 @@ const PI12	  = Math.PI / 12.0;
 const RAD4DEG = Math.PI / 180.0;
 const DEG4RAD = 180.0 / Math.PI;
 
+//Posicao barra
+function Point(x, y) {
+	this.x = x;
+	this.y = y;
+}
+//Tamanho barra
+function Size(w, h) {
+	this.w = w;
+	this.h = h;
+}
+
 //tiros
 function Shot(_x, _y, _vx, _vy, r, dir) {
 	this.pos = {_x, _y};
@@ -20,6 +31,8 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI, true);
 		ctx.closePath();
 		ctx.fill();
+		//console.log("a");
+		//console.log(this.pos);
 	}
 	//move os tiros
 	this.move = function(dt, g) {
@@ -117,7 +130,8 @@ function Shooter(center, size, color, rotacao) {
 			this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
 
 			this.center.x += 0 * dt;
-	    this.center.y += 200*Math.random() * dt;
+	    this.center.y += 5*10*Math.random() * dt;
+			//console.log(this.center);
 		}
 	}
   //reset da nave

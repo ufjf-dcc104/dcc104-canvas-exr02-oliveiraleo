@@ -13,3 +13,16 @@
 - Correção dos limites da tela para as naves (que agora são inerentes ao tipo do objeto e não a instância do mesmo)
 
 - Remoção de código desnecessário
+
+-> Commit 3
+
+- Adição da barra de energia
+- Adição do controle da barra
+
+- Ajuste na regra do gameover
+- Ajuste no texto do placar
+- Ajuste visual da barra de energia
+
+- Correção na colisao do tiro com as naves
+
+- Remoção de variável náo usada
