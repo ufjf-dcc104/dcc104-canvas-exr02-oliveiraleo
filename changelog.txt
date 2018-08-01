@@ -2,5 +2,14 @@
 
 - Commit inicial
 
+-> Commit 2
 
+- Adição de um id no player
 
+- Ajuste da função de movimento do player
+- Ajuste da posição inicial dos bots (que agora aparecem em posições aleatórias)
+
+- Correção da função de movimento dos bots
+- Correção dos limites da tela para as naves (que agora são inerentes ao tipo do objeto e não a instância do mesmo)
+
+- Remoção de código desnecessário

@@ -63,9 +63,9 @@ function start() {
 	var shots = []; var shoot = false;
 	var shots2 = []; var shoot2 = false;
 
-	var shooter1 = new Shooter({x: WIDTH/2, y: HEIGHT/6}, {w: 20, h: 35}, "black", Math.PI);
-  var shooter2 = new Shooter({x: WIDTH/2, y: HEIGHT-(HEIGHT/6)}, {w: 20, h: 35}, "yellow", 2*Math.PI);
-	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.h), 0, 325, 12, 0);
+	var shooter1 = new Shooter({x: WIDTH/2, y: HEIGHT/6}, {w: 20, h: 35}, "black", 2*Math.PI, ctx);
+  var shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI, ctx);
+	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.h), 0, 325, 12, 1);
   var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
 
 	var verificaPontos1 = false;
@@ -95,8 +95,11 @@ function start() {
 		}
 		verificaInicio = true;
 		//reposiciona as naves
+		var spaw = WIDTH*Math.random()*Math.random();
+
+
 		shooter1.center = {x: WIDTH/2, y: HEIGHT/6};
-		shooter2.center = {x: WIDTH/2, y: HEIGHT-(HEIGHT/6)};
+		shooter2.center = {x: spaw/Math.random(), y: 0};
 
 		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
     shooter2.reset();//volta as propriedades do shooter ao padrao do inicio
@@ -112,9 +115,15 @@ function start() {
 		texto.raster(ctx, "Pontos: " + shooter1.pontos, 10, 40);
 		texto.raster(ctx, "Vidas:" + shooter1.life, 10, 60);
 
-		texto2.raster(ctx, "Player 2", WIDTH-105, 20);
+		/*texto2.raster(ctx, "Player 2", WIDTH-105, 20);
 		texto2.raster(ctx, "Pontos: " + shooter2.pontos, WIDTH-110, 40);
-		texto2.raster(ctx, "Vidas:" + shooter2.life, WIDTH-100, 60);
+		texto2.raster(ctx, "Vidas:" + shooter2.life, WIDTH-100, 60);*/
+
+		//for(var i = 0; i < 10; i++){
+			//shooter2
+		//}
+
+
 		//Verifica colisao
 		for(var i = 0; i < shots.length; i++){
 			if(((shots[i].pos.x >= shooter2.center.x-shooter2.size.w) && (shots[i].pos.x <= shooter2.center.x+shooter2.size.w)) &&
@@ -124,7 +133,7 @@ function start() {
 				if(verificaPontos1){
 					shooter2.life--;
 				}
-				shots.splice(i, 1);
+				shots.splice(i, 1);//apaga os tiros que colidiram
 			}
 		}
 		if (shooter2.life <= 0) {
@@ -168,27 +177,7 @@ function start() {
 		//Movimenta as naves
 		shooter1.move(DT);
     shooter2.move(DT);
-		//limite das naves na tela
-		//player 1
-		if (shooter1.center.x < shooter1.size.w) {
-			shooter1.center.x = shooter1.size.w;
-		}if (shooter1.center.x > WIDTH-shooter1.size.w) {
-			shooter1.center.x = WIDTH-shooter1.size.w;
-		}if (shooter1.center.y < shooter1.size.h) {
-			shooter1.center.y = shooter1.size.h;
-		}if (shooter1.center.y > HEIGHT-shooter1.size.h) {
-			shooter1.center.y = HEIGHT-shooter1.size.h;
-		}
-		//player 2
-		if (shooter2.center.x < shooter2.size.w) {
-			shooter2.center.x = shooter2.size.w;
-		}if (shooter2.center.x > WIDTH-shooter2.size.w) {
-			shooter2.center.x = WIDTH-shooter2.size.w;
-		}if (shooter2.center.y < shooter2.size.h) {
-			shooter2.center.y = shooter2.size.h;
-		}if (shooter2.center.y > HEIGHT-shooter2.size.h) {
-			shooter2.center.y = HEIGHT-shooter2.size.h;
-		}
+
 		//desenha os tiros na tela
 		shots.forEach( function(shot) { shot.draw(ctx); } );
 		shots2.forEach( function(shot2) { shot2.draw(ctx); } );
@@ -218,7 +207,7 @@ function start() {
 	//controles do jogo
 	addEventListener("keydown", function(e){
 		if(e.keyCode == 32 && !shoot) { // Espaco, tiro player 1
-			ball.pos = {x: shooter1.ballPos.x, y: (shooter1.ballPos.y+shooter1.size.h)}; // marca a posicao da bala
+			ball.pos = {x: shooter1.ballPos.x, y: (shooter1.ballPos.y)}; // marca a posicao da bala
 			ball.setVelocityVector(shooter1.center); // ajusta a velocidade da bala
 			shots.push(ball); // adiciona a bala no vetor de tiros
 			ball = null; // apaga a bala auxiliar
@@ -245,7 +234,7 @@ function start() {
 		}if (e.keyCode == 82) {// R
 				recomeca = true;
 		}
-		if (e.keyCode == 87) {// W
+		/*if (e.keyCode == 87) {// W
 			shooter2.vy = -100;
 			e.preventDefault();
 		}
@@ -262,18 +251,18 @@ function start() {
 			e.preventDefault();
 		}
 		if (e.keyCode == 16){// Shift Esq
-			ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y}; // marca a posicao da bala
+			ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
 			ball2.setVelocityVector(shooter2.center); // ajusta a velocidade da bala
 			shots2.push(ball2); // adiciona a bala no vetor de tiros
 			ball2 = null; // apaga a bala auxiliar
 			shoot2 = true;// bloqueia a repeticao do tiro
 			e.preventDefault();
-		}
+		}*/
 	});
 
 	addEventListener("keyup", function(e){
 		if(e.keyCode == 32) { // Espaco player 1
-			ball = new Shot(shooter1.ballPos.x, shooter1.ballPos.y, 325, 0, 12, 0);// prepara a nova bala
+			ball = new Shot(shooter1.ballPos.x, shooter1.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
 			shoot = false;
 		}
 		if(e.keyCode == 37 || e.keyCode == 39){ //esquerda e direita player 1
@@ -284,7 +273,7 @@ function start() {
       shooter1.ay = 0;
 			shooter1.vy = 0;
     }
-		if (e.keyCode == 87 || e.keyCode == 83) {// W e S
+		/*if (e.keyCode == 87 || e.keyCode == 83) {// W e S
 			shooter2.vy = 0;
 		}
 		if (e.keyCode == 65 || e.keyCode == 68) {// A e D
@@ -293,6 +282,6 @@ function start() {
 		if (e.keyCode == 16) {// Shift Esq
 			ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
 			shoot2 = false;
-		}
+		}*/
 	});
 }

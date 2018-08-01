@@ -30,7 +30,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 			this.pos.x += this.vel.vx * dt;
 			this.pos.y += this.vel.vy * dt;
 		}
-		console.log(this.pos);
+		//console.log(this.pos);
 	}
 	//cria o vetor de velocidade do tiro
 	this.setVelocityVector = function(o, _mag) {
@@ -46,7 +46,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 		this.vel = {vx: (d.x - o.x)/norm, vy: (d.y - o.y)/norm};
 		this.vel.vx *= mag;
 		this.vel.vy *= mag;
-		console.log(this.vel);
+		//console.log(this.vel);
 	}
 }
 
@@ -55,7 +55,7 @@ function Shooter(center, size, color, rotacao) {
 	this.center = center || {x: 0, y: 0};
 	this.size  = size || {w: 50, h: 50};
 	this.theta = 0;
-	this.omega = 0;
+	//this.omega = 0;
   this.vx = 0;
   this.vy = 0;
 	this.color = " ";
@@ -81,26 +81,54 @@ function Shooter(center, size, color, rotacao) {
 		ctx.fill();
 		ctx.stroke();
 
+		if(true){
+	    ctx.strokeStyle = "grey";
+	    ctx.strokeRect(-this.size.w/2, -this.size.h/2, this.size.w, this.size.h);
+	  }
+
 		ctx.restore();
 	}
 	//move a nave
 	this.move = function(dt) {
-		//posiciona o tiro na ponta da nave e define a direcao
-		this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
-		this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
-		//move a nave
-    this.center.x += this.vx * dt;
-    this.center.y += this.vy * dt;
+		//limite das naves na tela
+		//limite lateral //500 tam da tela
+		if (this.center.x < this.size.w/2) {
+			this.center.x = this.size.w/2;
+		}if (this.center.x > 500-this.size.w/2) {
+			this.center.x = 500-this.size.w/2;
+		}
+
+		if(this.rotacao == 2*Math.PI){
+			//limite cima e baixo
+			if (this.center.y < this.size.h) {
+				this.center.y = this.size.h;
+			}if (this.center.y > 500-this.size.h/2) {
+				this.center.y = 500-this.size.h/2;
+			}
+
+			//posiciona o tiro na ponta da nave e define a direcao
+			this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
+			this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
+			//move a nave
+	    this.center.x += this.vx * dt;
+	    this.center.y += this.vy * dt;
+		}else {//controle dos bots
+			this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
+			this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
+
+			this.center.x += 0 * dt;
+	    this.center.y += 200*Math.random() * dt;
+		}
 	}
   //reset da nave
 	this.reset = function() {
-		this.life = 3;
-		this.pontos = 0;
-	}
-}
+		if(rotacao == 2*Math.PI){
+			this.life = 3;
+			this.pontos = 0;
+		}else {
+			this.life = 1;
+			this.pontos = 0;
+		}
 
-function objeto(center, size, color){
-	this.center = center || {x:0, y:0};
-	this.size = size || {w:0, h:0};
-	this.color = color || "puple";
+	}
 }
