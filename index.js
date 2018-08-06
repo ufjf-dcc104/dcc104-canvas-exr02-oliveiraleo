@@ -38,9 +38,6 @@ var atira2 = function(){
 	tiro2.load();
 	tiro2.play();
 }
-
-
-
 //Regra do jogo
 function start() {
 	var canvas = document.getElementById("game");
@@ -66,7 +63,7 @@ function start() {
 	var shots2 = []; var shoot2 = false;
 
 	var shooter1 = new Shooter({x: WIDTH/2, y: HEIGHT/6}, {w: 20, h: 35}, "black", 2*Math.PI);
-  //var shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
+
 	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.h), 0, 325, 12, 1);
   //var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
 
@@ -95,10 +92,6 @@ function start() {
 			s1.center.x-(s1.size.w/2) <= s2.center.x+(s2.size.w/2) &&
 			s1.center.y+(s1.size.h/2) >= s2.center.y-(s2.size.h/2) &&
 			s1.center.y-(s1.size.h/2) <= s2.center.y+(s2.size.h/2)){
-				//s1.reposiciona();
-				//s1.life--;
-				//s2.reposiciona();
-				//s2.life--;
 				return true;
 			}
 			return false;
@@ -230,18 +223,6 @@ function start() {
 				bar.energy -= 0.1;
 			}
 		}
-
-
-		/*if (shooter1.pontos >= PTSMAX || shooter2.pontos >= PTSMAX) { // fim de jogo
-			//verifica quem ganhou
-			if (shooter1.pontos >= PTSMAX) {
-				ganhador = 1;
-			}if (shooter2.pontos >= PTSMAX) {
-				ganhador = 2;
-			}
-			recomeca = false;
-			reset();
-		}*/
 	}else if(!inicio){// exibe a mensagem da tela inicial
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
 		msgInicio.raster(ctx, "Aperte ENTER para começar", 25, HEIGHT/2 );
