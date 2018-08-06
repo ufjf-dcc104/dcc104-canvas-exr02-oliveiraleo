@@ -88,28 +88,13 @@ function start() {
 		}
 	}
 
-	/*for(var i = 0; i < 10; i++){//zera o vetor
-		bots[i] = 0;
-	}*/
-
 	var bar = { pos: new Point(75, 7), size: new Size(410, 15), energy: 1.0 };
-
-	//var verificaPontos1 = false; //remover depois
-	//var verificaPontos2 = false;
 
 	var recomeca = true;
 	var verificaInicio = false;
 
 	var msgInicio = new Text("Courier", 30, "black");
 	var msg = new Text("Courier", 25, "black");
-
-	//define uma coordenada para o respawn do bot
-	/*function spawna(){
-		for(var i = 0; i < 10; i++){
-			shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
-			bots.push(shooter2);
-		}
-	}*/
 
 	function atira(){
 		//ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
@@ -121,9 +106,8 @@ function start() {
 
 	function carrega(){
 		//ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
-		shoot2 = false;
+		//shoot2 = false;
 	}
-
 	//reset do jogo
 	function reset() {
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);// limpa a tela do jogo
@@ -134,16 +118,13 @@ function start() {
 				msg.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
 				msg.raster(ctx, "Aperte R para continuar", WIDTH/6, HEIGHT/2 );
 			}
-		//}
 		verificaInicio = true;
-		//reposiciona as naves
+		//reposiciona a nave
 		var spawn = WIDTH*Math.random()*Math.random();
 
 		shooter1.center = {x: WIDTH/2, y: HEIGHT/6};
-		//shooter2.center = {x: spawn/Math.random(), y: 0};
 
 		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
-    //shooter2.reset();//volta as propriedades do shooter ao padrao do inicio
 		ganhador = 0;
 		bar.energy = 1.0;
 	}; reset();
@@ -153,10 +134,8 @@ function start() {
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
 		//texto da tela do jogo
-		//texto.raster(ctx, "Player 1", 17, 20);
 		texto.raster(ctx, "Vida:", 10, 20);
 		texto.raster(ctx, "Pontos: " + shooter1.pontos, 10, 40);
-
 
 		//controle visual da barra de vida
 		ctx.strokeStyle = "#a0afa1";//Controla a borda
@@ -173,38 +152,12 @@ function start() {
 			ctx.fillStyle = "#00ff15";
 		}
 
-
 		ctx.fillRect(bar.pos.x, bar.pos.y, bar.energy * bar.size.w, bar.size.h);
     ctx.strokeRect(bar.pos.x, bar.pos.y, bar.size.w, bar.size.h);
 
-		/*texto2.raster(ctx, "Player 2", WIDTH-105, 20);
-		texto2.raster(ctx, "Pontos: " + shooter2.pontos, WIDTH-110, 40);
-		texto2.raster(ctx, "Vidas:" + shooter2.life, WIDTH-100, 60);*/
-
-
-		//shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
-
-
-		if(bots.length <= 0){
-		//spawna();
-		}
-
+		//instancia novos bots
 		criaBot();
-		moverBot();
-
-		/*for(var i = 0; i < bots.length; i++){
-			if(bots[i].center.y>HEIGHT){
-				boots.splice(i, 1);
-			}
-		}*/
-		//limita o bot na tela
-		/*if(shooter2.center.y > HEIGHT){
-			shooter2.center.y = 0;
-		}*/
-
-
-		//Verifica colisao dos tiros
-		//do player
+		//Verifica colisao dos tiros com o bot
 		for(var i = 0; i < shots.length; i++){
 			for (var j = 0; j < bots.length; j++) {
 				if(((shots[i].pos.x >= bots[j].center.x-bots[j].size.w) && (shots[i].pos.x <= bots[j].center.x+bots[j].size.w)) &&
@@ -218,22 +171,7 @@ function start() {
 				}
 			}
 		}
-		/*if (shooter2.life <= 0) {
-			shooter2.reset();
-		}*/
-		//dos bots
-		/*for(var i = 0; i < shots2.length; i++){
-			if(((shots2[i].pos.x >= shooter1.center.x-shooter1.size.w) && (shots2[i].pos.x <= shooter1.center.x+shooter1.size.w)) &&
-			((shots2[i].pos.y >= shooter1.center.y-shooter1.size.h) && (shots2[i].pos.y <= shooter1.center.y+shooter1.size.h))){
-				//shooter1.life--;
-				bar.energy -= 1/10;
-				shots2.splice(i, 1);//apaga os tiros que colidiram
-			}
-		}*/
-		/*if (shooter1.life <= 0) {
-			shooter2.pontos++;
-			shooter1.reset();
-		}*/
+
 		//contadores para o for do tiro
 		var cont, cont2;
 		//tiros player 1
@@ -256,7 +194,7 @@ function start() {
 		}
 		//Movimenta as naves
 		shooter1.move(DT);
-    //shooter2.move(DT);
+		moverBot();
 
 		//desenha os tiros na tela
 		shots.forEach( function(shot) { shot.draw(ctx); } );
