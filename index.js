@@ -39,6 +39,8 @@ var atira2 = function(){
 	tiro2.play();
 }
 
+
+
 //Regra do jogo
 function start() {
 	var canvas = document.getElementById("game");
@@ -86,6 +88,20 @@ function start() {
 			bots[i].move(DT);
 			bots[i].draw(ctx);
 		}
+	}
+
+	function colideNave(s1, s2){
+		if(s1.center.x+(s1.size.w/2) >= s2.center.x-(s2.size.w/2) &&
+			s1.center.x-(s1.size.w/2) <= s2.center.x+(s2.size.w/2) &&
+			s1.center.y+(s1.size.h/2) >= s2.center.y-(s2.size.h/2) &&
+			s1.center.y-(s1.size.h/2) <= s2.center.y+(s2.size.h/2)){
+				//s1.reposiciona();
+				//s1.life--;
+				//s2.reposiciona();
+				//s2.life--;
+				return true;
+			}
+			return false;
 	}
 
 	var bar = { pos: new Point(75, 7), size: new Size(410, 15), energy: 1.0 };
@@ -207,6 +223,14 @@ function start() {
 			recomeca = false;
 			reset();
 		}
+
+		for (var i = 0; i < bots.length; i++) {
+			if(colideNave(shooter1, bots[i])){
+				bots.splice(i, 1);
+				bar.energy -= 0.1;
+			}
+		}
+
 
 		/*if (shooter1.pontos >= PTSMAX || shooter2.pontos >= PTSMAX) { // fim de jogo
 			//verifica quem ganhou
