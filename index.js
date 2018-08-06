@@ -70,9 +70,27 @@ function start() {
 
 	var bots = [];//inimigos
 
-	for(var i = 0; i < 10; i++){//zera o vetor
-		bots[i] = 0;
+	var cadenciaBots = 0;
+
+	function criaBot(){
+		cadenciaBots = cadenciaBots + 1 * DT;
+		if(cadenciaBots > 3){//tempo para criar um novo sprite
+			cadenciaBots = 0;
+			bots.push(new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 20, h: 35}, "yellow", Math.PI));
+			console.log(bots.length);
+		}
 	}
+
+	function moverBot(){
+		for (var i = 0; i < bots.length; i++) {
+			bots[i].move(DT);
+			bots[i].draw(ctx);
+		}
+	}
+
+	/*for(var i = 0; i < 10; i++){//zera o vetor
+		bots[i] = 0;
+	}*/
 
 	var bar = { pos: new Point(75, 7), size: new Size(410, 15), energy: 1.0 };
 
@@ -169,8 +187,11 @@ function start() {
 
 
 		if(bots.length <= 0){
-		spawna();
+		//spawna();
 		}
+
+		criaBot();
+		moverBot();
 
 		/*for(var i = 0; i < bots.length; i++){
 			if(bots[i].center.y>HEIGHT){
