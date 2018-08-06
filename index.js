@@ -52,7 +52,7 @@ function start() {
 
 	const PTSMAX = 2; // pontuacao que encerra o jogo
 	//toca a musica de fundo em loop
-	musica.volume = 0;
+	musica.volume = 1.0;
 	musica.play();
 	musica.addEventListener('ended', function() {
 		this.currentTime = 0;
@@ -124,14 +124,15 @@ function start() {
 		shots.length = 0;
 		shots2.length = 0;
 		if(!recomeca){
+				musica.pause();
 				msg.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
 				msg.raster(ctx, "Aperte R para continuar", WIDTH/6, HEIGHT/2 );
 			}
 		verificaInicio = true;
 		//reposiciona a nave
-		var spawn = WIDTH*Math.random()*Math.random();
-
-		shooter1.center = {x: WIDTH/2, y: HEIGHT/6};
+		//var spawn = WIDTH*Math.random()*Math.random();
+		//posiciona a nave na posicao inicial
+		shooter1.center = {x: WIDTH/2, y: HEIGHT-shooter1.size.h};
 
 		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
 		ganhador = 0;
@@ -145,6 +146,8 @@ function start() {
 		//texto da tela do jogo
 		texto.raster(ctx, "Vida:", 10, 20);
 		texto.raster(ctx, "Pontos: " + shooter1.pontos, 10, 40);
+
+		musica.play();
 
 		//controle visual da barra de vida
 		ctx.strokeStyle = "#a0afa1";//Controla a borda
