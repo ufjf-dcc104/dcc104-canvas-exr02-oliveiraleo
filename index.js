@@ -64,9 +64,9 @@ function start() {
 	var shots2 = []; var shoot2 = false;
 
 	var shooter1 = new Shooter({x: WIDTH/2, y: HEIGHT/6}, {w: 20, h: 35}, "black", 2*Math.PI);
-  var shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
+  //var shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
 	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.h), 0, 325, 12, 1);
-  var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
+  //var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
 
 	var bots = [];//inimigos
 
@@ -104,23 +104,23 @@ function start() {
 	var msg = new Text("Courier", 25, "black");
 
 	//define uma coordenada para o respawn do bot
-	function spawna(){
+	/*function spawna(){
 		for(var i = 0; i < 10; i++){
 			shooter2 = new Shooter({x: WIDTH/2, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
 			bots.push(shooter2);
 		}
-	}
+	}*/
 
 	function atira(){
-		ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
-		ball2.setVelocityVector(shooter2.center); // ajusta a velocidade da bala
+		//ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
+		//ball2.setVelocityVector(shooter2.center); // ajusta a velocidade da bala
 		shots2.push(ball2); // adiciona a bala no vetor de tiros
 		ball2 = null; // apaga a bala auxiliar
 		shoot2 = true;// bloqueia a repeticao do tiro
 	}
 
 	function carrega(){
-		ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
+		//ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
 		shoot2 = false;
 	}
 
@@ -139,12 +139,11 @@ function start() {
 		//reposiciona as naves
 		var spawn = WIDTH*Math.random()*Math.random();
 
-
 		shooter1.center = {x: WIDTH/2, y: HEIGHT/6};
-		shooter2.center = {x: spawn/Math.random(), y: 0};
+		//shooter2.center = {x: spawn/Math.random(), y: 0};
 
 		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
-    shooter2.reset();//volta as propriedades do shooter ao padrao do inicio
+    //shooter2.reset();//volta as propriedades do shooter ao padrao do inicio
 		ganhador = 0;
 		bar.energy = 1.0;
 	}; reset();
@@ -199,34 +198,38 @@ function start() {
 			}
 		}*/
 		//limita o bot na tela
-		if(shooter2.center.y > HEIGHT){
+		/*if(shooter2.center.y > HEIGHT){
 			shooter2.center.y = 0;
-		}
+		}*/
 
 
 		//Verifica colisao dos tiros
 		//do player
 		for(var i = 0; i < shots.length; i++){
-			if(((shots[i].pos.x >= shooter2.center.x-shooter2.size.w) && (shots[i].pos.x <= shooter2.center.x+shooter2.size.w)) &&
-			((shots[i].pos.y >= shooter2.center.y-shooter2.size.h) && (shots[i].pos.y <= shooter2.center.y+shooter2.size.h))) {
-				shooter2.life--;
-				shooter2.center.y = 0;
-				shots.splice(i, 1);//apaga os tiros que colidiram
+			for (var j = 0; j < bots.length; j++) {
+				if(((shots[i].pos.x >= bots[j].center.x-bots[j].size.w) && (shots[i].pos.x <= bots[j].center.x+bots[j].size.w)) &&
+				((shots[i].pos.y >= bots[j].center.y-bots[j].size.h) && (shots[i].pos.y <= bots[j].center.y+bots[j].size.h))) {
+					//shooter2.life--;
+					bots[j].center.y = 0;
+					shots.splice(i, 1);//apaga os tiros que colidiram
+					bots.splice(j, 1);
+					shooter1.pontos++;
+					break;
+				}
 			}
 		}
-		if (shooter2.life <= 0) {
-			shooter1.pontos++;
+		/*if (shooter2.life <= 0) {
 			shooter2.reset();
-		}
+		}*/
 		//dos bots
-		for(var i = 0; i < shots2.length; i++){
+		/*for(var i = 0; i < shots2.length; i++){
 			if(((shots2[i].pos.x >= shooter1.center.x-shooter1.size.w) && (shots2[i].pos.x <= shooter1.center.x+shooter1.size.w)) &&
 			((shots2[i].pos.y >= shooter1.center.y-shooter1.size.h) && (shots2[i].pos.y <= shooter1.center.y+shooter1.size.h))){
 				//shooter1.life--;
 				bar.energy -= 1/10;
 				shots2.splice(i, 1);//apaga os tiros que colidiram
 			}
-		}
+		}*/
 		/*if (shooter1.life <= 0) {
 			shooter2.pontos++;
 			shooter1.reset();
@@ -253,14 +256,14 @@ function start() {
 		}
 		//Movimenta as naves
 		shooter1.move(DT);
-    shooter2.move(DT);
+    //shooter2.move(DT);
 
 		//desenha os tiros na tela
 		shots.forEach( function(shot) { shot.draw(ctx); } );
 		shots2.forEach( function(shot2) { shot2.draw(ctx); } );
 		//desenha as naves na tela
 		shooter1.draw(ctx);
-		shooter2.draw(ctx);
+		//shooter2.draw(ctx);
 
 		if(bar.energy <= 0.0){// fim de jogo
 			recomeca = false;
