@@ -35,7 +35,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 		//console.log(this.pos);
 	}
 	//move os tiros
-	this.move = function(dt, g) {
+	/*this.move = function(dt, g) {
 		if(dir == 0){
 			this.pos.x += this.vel.vx * dt;
 			this.pos.y += this.vel.vy * dt;
@@ -60,7 +60,55 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 		this.vel.vx *= mag;
 		this.vel.vy *= mag;
 		//console.log(this.vel);
+	}*/
+
+	//Verifica se o tiro saiu da tela
+	this.isForaTela = function(){
+		if(this.pos.y < 0 || this.pos.x < 0 || this.pos.x > 500 || this.pos.y > 500){
+			return true;
+		}
+		return false;
 	}
+	//move os tiros
+	this.movexUp = function(dt){
+		if (!(this.isForaTela())) {
+			this.pos.y -= 300 * dt;
+		}
+	}
+
+	this.movexDown = function(dt){
+		if (!(this.isForaTela())) {
+			this.pos.y += 300 * dt;
+		}
+	}
+
+	/*this.moveyDir = function(dt){
+		if (!(this.isForaTela())) {
+			this.pos.x += 300 * dt;
+		}
+	}
+
+	this.moveyEsq = function(dt){
+		if (!(this.isForaTela())) {
+			this.pos.x -= 300 * dt;
+		}
+	}*/
+	//define a direcao do movimento do tiro
+	/*this.move = function(dt){
+		if (this.angle == 90 || this.angle == -270) {
+			this.movexUp(dt);
+		}if (this.angle == -90 || this.angle == 270) {
+			this.movexDown(dt);
+		}if (this.angle == 180 || this.angle == -180) {
+			this.moveyDir(dt);
+		}if (this.angle == 0) {
+			this.moveyEsq(dt);
+		}
+		if (this.dir == 1) {
+			this.movexUp(dt);
+		}
+	}*/
+	//2*Math.PI
 }
 
 //naves

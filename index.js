@@ -17,7 +17,7 @@ var inicio = false;
 var texto = new Text();
 var texto2 = new Text("Courier", 20, "red");
 
-var ganhador = 0;
+//var ganhador = 0;
 
 //sons
 var musica = new Audio("sound/war.m4a");
@@ -76,7 +76,7 @@ function start() {
 		if(cadenciaBots > 3){//tempo para criar um novo sprite
 			cadenciaBots = 0;
 			bots.push(new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 20, h: 35}, "yellow", Math.PI));
-			console.log(bots.length);
+			//console.log(bots.length);
 		}
 	}
 
@@ -86,7 +86,7 @@ function start() {
 			bots[i].draw(ctx);
 		}
 	}
-
+	//verifica a colisao das naves
 	function colideNave(s1, s2){
 		if(s1.center.x+(s1.size.w/2) >= s2.center.x-(s2.size.w/2) &&
 			s1.center.x-(s1.size.w/2) <= s2.center.x+(s2.size.w/2) &&
@@ -108,9 +108,9 @@ function start() {
 	function atira(){
 		//ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
 		//ball2.setVelocityVector(shooter2.center); // ajusta a velocidade da bala
-		shots2.push(ball2); // adiciona a bala no vetor de tiros
-		ball2 = null; // apaga a bala auxiliar
-		shoot2 = true;// bloqueia a repeticao do tiro
+		//shots2.push(ball2); // adiciona a bala no vetor de tiros
+		//ball2 = null; // apaga a bala auxiliar
+		//shoot2 = true;// bloqueia a repeticao do tiro
 	}
 
 	function carrega(){
@@ -131,11 +131,11 @@ function start() {
 		verificaInicio = true;
 		//reposiciona a nave
 		//var spawn = WIDTH*Math.random()*Math.random();
-		//posiciona a nave na posicao inicial
+		//coloca a nave na posicao inicial
 		shooter1.center = {x: WIDTH/2, y: HEIGHT-shooter1.size.h};
 
 		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
-		ganhador = 0;
+		//ganhador = 0;
 		bar.energy = 1.0;
 	}; reset();
 	//regra do jogo
@@ -169,6 +169,7 @@ function start() {
 
 		//instancia novos bots
 		criaBot();
+
 		//Verifica colisao dos tiros com o bot
 		for(var i = 0; i < shots.length; i++){
 			for (var j = 0; j < bots.length; j++) {
@@ -188,16 +189,19 @@ function start() {
 		var cont, cont2;
 		//tiros player 1
 		for(cont = 0; cont < shots.length; cont++) {
-			shots[cont].move(DT, G);
+			//shots[cont].move(DT, G);
+			shots[cont].movexUp(DT);
 			//Apaga os tiros que saem da tela
-			if(shots[cont].pos.y < 0 || shots[cont].pos.x < 0 || shots[cont].pos.x > WIDTH || shots[cont].pos.y > HEIGHT){// impõe limites
+			//if(shots[cont].pos.y < 0 || shots[cont].pos.x < 0 || shots[cont].pos.x > WIDTH || shots[cont].pos.y > HEIGHT){// impõe limites
+			if(shots[cont].isForaTela()){
 				shots.splice(cont, 1);// remove o tiro do vetor
 				//verificaPontos1 = false;// liga novamente o contador
 			}
 		}
 		//tiros player 2
 		for(cont2 = 0; cont2 < shots2.length; cont2++) {
-			shots2[cont2].move(DT, G);
+			//shots2[cont2].move(DT, G);
+			shots2[cont2].movexDown(DT);
 			//Apaga os tiros que saem da tela
 			if(shots2[cont2].pos.y < 0 || shots2[cont2].pos.x < 0 || shots2[cont2].pos.x > WIDTH || shots2[cont2].pos.y > HEIGHT){// impõe limites
 				shots2.splice(cont2, 1);// remove o tiro do vetor
@@ -206,6 +210,7 @@ function start() {
 		}
 		//Movimenta as naves
 		shooter1.move(DT);
+		//console.log(shooter1.rotacao);
 		moverBot();
 
 		//desenha os tiros na tela
@@ -239,7 +244,7 @@ function start() {
 	addEventListener("keydown", function(e){
 		if(e.keyCode == 32 && !shoot) { // Espaco, tiro player 1
 			ball.pos = {x: shooter1.ballPos.x, y: (shooter1.ballPos.y)}; // marca a posicao da bala
-			ball.setVelocityVector(shooter1.center); // ajusta a velocidade da bala
+			//ball.setVelocityVector(shooter1.center); // ajusta a velocidade da bala
 			shots.push(ball); // adiciona a bala no vetor de tiros
 			ball = null; // apaga a bala auxiliar
 			shoot = true;// bloqueia a repeticao do tiro
