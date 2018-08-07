@@ -60,16 +60,17 @@ function start() {
 	});
 	//variaveis globais
 	var shots = []; var shoot = false;
-	var shots2 = []; var shoot2 = false;
+	var shotsBot = []; //var shoot2 = false;
 	//cria a nave do player
 	var shooter1 = new Shooter({x: 0, y: 0}, {w: 20, h: 35}, "black", 2*Math.PI);
 	//tiros do player
-	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.h), 0, 325, 12, 1);
+	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.center.h), 0, 325, 12, 1);
   //var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
 
 	var bots = [];//vetor de inimigos
 
 	var frequenciaBots = 0;//determina a frequencia de novos inimigos
+	//var cadenciaTiro = 0;
 	var movimentoBot = null;
 	//cria o identificador de movimento dos bots
 	function defineMovimento(bot){
@@ -128,18 +129,25 @@ function start() {
 		//shots2.push(ball2); // adiciona a bala no vetor de tiros
 		//ball2 = null; // apaga a bala auxiliar
 		//shoot2 = true;// bloqueia a repeticao do tiro
+
+		for (var i = 0; i < bots.length; i++) {
+			if (bots[i].cadenciaTiro > 1.8) {//controla o tempo entre os tiros
+				bots[i].cadenciaTiro = 0;
+				var ballBot = new ShotBot({x:bots[i].ballPos.x, y:bots[i].ballPos.y+bots[i].size.h}, {vx:0, vy:0}, 12);
+				shotsBot.push(ballBot);
+				//console.log(shotsBot.length);
+				//console.log(ballBot.pos);
+				ballBot = null;
+			}
+		}
 	}
 
-	function carrega(){
-		//ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 325, 0, 12, 1);// prepara a nova bala
-		//shoot2 = false;
-	}
 	//reset do jogo
 	function reset() {
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);// limpa a tela do jogo
 		// limpa os tiros da tela
 		shots.length = 0;
-		shots2.length = 0;
+		shotsBot.length = 0;
 		if(!recomeca){
 				musica.pause();
 				msg.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
@@ -187,20 +195,34 @@ function start() {
 
 		//instancia novos bots
 		criaBot();
-
+		atira();
 		//Verifica colisao dos tiros com os bots
 		for(var i = 0; i < shots.length; i++){
 			for (var j = 0; j < bots.length; j++) {
 				if(((shots[i].pos.x >= bots[j].center.x-bots[j].size.w) && (shots[i].pos.x <= bots[j].center.x+bots[j].size.w)) &&
 				((shots[i].pos.y >= bots[j].center.y-bots[j].size.h) && (shots[i].pos.y <= bots[j].center.y+bots[j].size.h))) {
 					//shooter2.life--;
-					bots[j].center.y = 0;
+					//bots[j].center.y = 0;
 					shots.splice(i, 1);//apaga os tiros que colidiram
 					bots.splice(j, 1);
 					shooter1.pontos++;
 					break;
 				}
 			}
+		}
+
+		//Verifica colisao dos tiros com o player
+		for(var i = 0; i < shotsBot.length; i++){
+				if(((shotsBot[i].pos.x >= shooter1.center.x-shooter1.size.w) && (shotsBot[i].pos.x <= shooter1.center.x+shooter1.size.w)) &&
+				((shotsBot[i].pos.y >= shooter1.center.y-shooter1.size.h) && (shotsBot[i].pos.y <= shooter1.center.y+shooter1.size.h))) {
+					//shooter2.life--;
+					//bots[j].center.y = 0;
+					shotsBot.splice(i, 1);//apaga os tiros que colidiram
+					//bots.splice(j, 1);
+					//shooter1.pontos++;
+					bar.energy -= 0.1;
+					break;
+				}
 		}
 
 		//contadores para o for do tiro
@@ -216,13 +238,13 @@ function start() {
 				//verificaPontos1 = false;// liga novamente o contador
 			}
 		}
-		//tiros player 2
-		for(cont2 = 0; cont2 < shots2.length; cont2++) {
+		//tiros bots
+		for(cont2 = 0; cont2 < shotsBot.length; cont2++) {
 			//shots2[cont2].move(DT, G);
-			shots2[cont2].movexDown(DT);
+			shotsBot[cont2].movexDown(DT);
 			//Apaga os tiros que saem da tela
-			if(shots2[cont2].pos.y < 0 || shots2[cont2].pos.x < 0 || shots2[cont2].pos.x > WIDTH || shots2[cont2].pos.y > HEIGHT){// impõe limites
-				shots2.splice(cont2, 1);// remove o tiro do vetor
+			if(shotsBot[cont2].isForaTela()){// impõe limites
+				shotsBot.splice(cont2, 1);// remove o tiro do vetor
 			//verificaPontos2 = false;// liga novamente o contador
 			}
 		}
@@ -233,7 +255,7 @@ function start() {
 
 		//desenha os tiros na tela
 		shots.forEach( function(shot) { shot.draw(ctx); } );
-		shots2.forEach( function(shot2) { shot2.draw(ctx); } );
+		shotsBot.forEach( function(shotBot) { shotBot.draw(ctx); } );
 		//desenha as naves na tela
 		shooter1.draw(ctx);
 		//shooter2.draw(ctx);
@@ -266,6 +288,7 @@ function start() {
 			ball.pos = {x: shooter1.ballPos.x, y: (shooter1.ballPos.y)}; // marca a posicao da bala
 			//ball.setVelocityVector(shooter1.center); // ajusta a velocidade da bala
 			shots.push(ball); // adiciona a bala no vetor de tiros
+			//console.log(ball);
 			ball = null; // apaga a bala auxiliar
 			shoot = true;// bloqueia a repeticao do tiro
 			e.preventDefault();
@@ -307,7 +330,7 @@ function start() {
 			e.preventDefault();
 		}*/
 		if (e.keyCode == 16){// Shift Esq
-			atira();
+			//atira();
 			e.preventDefault();
 		}
 	});
@@ -332,7 +355,7 @@ function start() {
 			shooter2.vx = 0;
 		}*/
 		if (e.keyCode == 16) {// Shift Esq
-			carrega();
+			//carrega();
 		}
 	});
 }

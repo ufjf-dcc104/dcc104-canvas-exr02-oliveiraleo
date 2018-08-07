@@ -17,8 +17,37 @@ function Size(w, h) {
 	this.w = w;
 	this.h = h;
 }
-
-//tiros
+//tiros dos bots
+function ShotBot(pos, r) {
+	//this.pos = {_x, _y};
+	this.pos = pos;
+	//this.vel = {_vx, _vy};
+	this.radius = r;
+	//desenha os tiros
+	this.draw = function(ctx) {
+		ctx.fillStyle   = "#000000";
+		ctx.strokeStyle = "#ff0000";
+		ctx.beginPath();
+			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);
+		ctx.closePath();
+		ctx.fill();
+		//console.log("a");
+		//console.log(this.pos);
+	}
+	this.isForaTela = function(){
+		if(this.pos.y < 0 || this.pos.x < 0 || this.pos.x > 500 || this.pos.y > 500){
+			return true;
+		}
+		return false;
+	}
+	//move os tiros
+	this.movexDown = function(dt){
+		if (!(this.isForaTela())) {
+			this.pos.y += 300 * dt;
+		}
+	}
+}
+//tiros do player
 function Shot(_x, _y, _vx, _vy, r, dir) {
 	this.pos = {_x, _y};
 	this.vel = {_vx, _vy};
@@ -28,7 +57,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 		ctx.fillStyle   = "#000000";
 		ctx.strokeStyle = "#ff0000";
 		ctx.beginPath();
-			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI, true);
+			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);
 		ctx.closePath();
 		ctx.fill();
 		//console.log("a");
@@ -78,7 +107,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 
 	this.movexDown = function(dt){
 		if (!(this.isForaTela())) {
-			this.pos.y += 300 * dt;
+			this.pos.y += 3 * dt;
 		}
 	}
 
@@ -122,6 +151,7 @@ function Shooter(center, size, color, rotacao) {
 	this.color = " ";
 	this.rotacao = rotacao;
 	this.pontos = 0;
+	this.cadenciaTiro = 0;
 
 	this.ballPos = {x: this.center.x, y: this.center.y - this.size.h / 2};
 	//desenha a nave
@@ -187,6 +217,9 @@ function Shooter(center, size, color, rotacao) {
 	this.moveBot = function(dt, id) {
 		this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
 		this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
+
+		this.cadenciaTiro += 1 * dt;
+
 		//acelera os bots que acabaram de entrar no jogo
 		if(this.center.y < 100){
 			this.center.x += 0;
