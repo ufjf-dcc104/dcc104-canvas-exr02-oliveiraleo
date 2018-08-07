@@ -70,19 +70,33 @@ function start() {
 	var bots = [];//vetor de inimigos
 
 	var frequenciaBots = 0;//determina a frequencia de novos inimigos
-
+	var movimentoBot = null;
+	//cria o identificador de movimento dos bots
+	function defineMovimento(bot){
+		if(bot.center.x<200){
+			return 1;
+		}if(bot.center.x>300){
+			return 2;
+		}else {
+			return 5;
+		}
+	}
+	//cria novos bots
 	function criaBot(){
 		frequenciaBots = frequenciaBots + 1 * DT;
-		if(frequenciaBots > 3){//tempo em segundos para criar um novo sprite
+		if(frequenciaBots > 2){//tempo em segundos para criar um novo sprite
 			frequenciaBots = 0;
-			bots.push(new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 20, h: 35}, "yellow", Math.PI));
-			console.log(bots.length);
+			var bot = new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
+			movimentoBot = defineMovimento(bot);//quando cria um novo bot, altera os movimentos de todos
+			bots.push(bot);
+			//console.log(bots.length);
 		}
 	}
 	//movimento dos bots
 	function moverBot(){
 		for (var i = 0; i < bots.length; i++) {
-			bots[i].move(DT);
+
+			bots[i].moveBot(DT, movimentoBot);
 			bots[i].draw(ctx);//desenha os bots
 			if(bots[i].isForaTelaBot()){//verifica se estao saindo da tela
 				bots.splice(i, 1);
@@ -223,6 +237,8 @@ function start() {
 		//desenha as naves na tela
 		shooter1.draw(ctx);
 		//shooter2.draw(ctx);
+
+
 
 		if(bar.energy <= 0.0){// fim de jogo
 			recomeca = false;

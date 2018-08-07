@@ -141,15 +141,13 @@ function Shooter(center, size, color, rotacao) {
 		ctx.closePath();
 		ctx.fill();
 		ctx.stroke();
-
-		if(true){
-	    ctx.strokeStyle = "grey";
-	    ctx.strokeRect(-this.size.w/2, -this.size.h/2, this.size.w, this.size.h);
-	  }
+		//mostra as caixas de colisao das naves
+	  ctx.strokeStyle = "grey";
+	  ctx.strokeRect(-this.size.w/2, -this.size.h/2, this.size.w, this.size.h);
 
 		ctx.restore();
 	}
-	//
+	//verifica se o player saiu da tela
 	this.isForaTela = function() {
 		//limite da lateral //500 tam da tela
 		if (this.center.x < this.size.w/2) {
@@ -169,7 +167,7 @@ function Shooter(center, size, color, rotacao) {
 		return false;
 	}
 
-	//
+	//verifica se bot saiu da tela
 	this.isForaTelaBot = function() {
 		if (this.center.x < this.size.w/2) {
 			this.center.x = this.size.w/2;
@@ -185,33 +183,36 @@ function Shooter(center, size, color, rotacao) {
 		return false;
 	}
 
+	//move os bots
+	this.moveBot = function(dt, id) {
+		this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
+		this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
+		//acelera os bots que acabaram de entrar no jogo
+		if(this.center.y < 100){
+			this.center.x += 0;
+			this.center.y += 5*10*Math.random() * dt;
+		}
+		//ajusta o movimento dos bots
+		if(id == 1){
+			this.center.x += 5*10*Math.random() * dt;
+			this.center.y += 5*10*Math.random() * dt;
+		}if(id == 2){
+			this.center.x -= 5*10*Math.random() * dt;
+			this.center.y += 5*10*Math.random() * dt;
+		}if(id == 5) {
+			this.center.x += 0*Math.random() * dt;
+			this.center.y += 5*10*Math.random() * dt;
+		}
+	}
 	//move a nave
 	this.move = function(dt) {
-		if(this.rotacao == 2*Math.PI && !(this.isForaTela())){
-			//limite cima e baixo
-			/*if (this.center.y < this.size.h) {
-				this.center.y = this.size.h;
-			}if (this.center.y > 500-this.size.h/2) {
-				this.center.y = 500-this.size.h/2;
-			}*/
-
+		if(!(this.isForaTela())){
 			//posiciona o tiro na ponta da nave e define a direcao
-			//this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
-			//this.ballPos.x = this.center.x + (this.size.h / 2);
 			this.ballPos.x = this.center.x;
-			//this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
 			this.ballPos.y = this.center.y - (this.size.h / 2);
 			//move a nave
 	    this.center.x += this.vx * dt;
 	    this.center.y += this.vy * dt;
-		}else if (this.rotacao == Math.PI) {
-			//controle dos bots
-			this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
-			this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
-
-			this.center.x += 0 * dt;
-	    this.center.y += 5*10*Math.random() * dt;
-			//console.log(this.center);
 		}
 	}
   //reset da nave
