@@ -50,7 +50,7 @@ function start() {
 	const DT = 1/FPS;
 	const G = -20;
 
-	const PTSMAX = 2; // pontuacao que encerra o jogo
+	//const PTSMAX = 2; // pontuacao que encerra o jogo
 	//toca a musica de fundo em loop
 	musica.volume = 1.0;
 	musica.play();
@@ -61,32 +61,35 @@ function start() {
 	//variaveis globais
 	var shots = []; var shoot = false;
 	var shots2 = []; var shoot2 = false;
-
-	var shooter1 = new Shooter({x: WIDTH/2, y: HEIGHT/6}, {w: 20, h: 35}, "black", 2*Math.PI);
-
+	//cria a nave do player
+	var shooter1 = new Shooter({x: 0, y: 0}, {w: 20, h: 35}, "black", 2*Math.PI);
+	//tiros do player
 	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.h), 0, 325, 12, 1);
   //var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
 
-	var bots = [];//inimigos
+	var bots = [];//vetor de inimigos
 
-	var cadenciaBots = 0;
+	var frequenciaBots = 0;//determina a frequencia de novos inimigos
 
 	function criaBot(){
-		cadenciaBots = cadenciaBots + 1 * DT;
-		if(cadenciaBots > 3){//tempo para criar um novo sprite
-			cadenciaBots = 0;
+		frequenciaBots = frequenciaBots + 1 * DT;
+		if(frequenciaBots > 3){//tempo em segundos para criar um novo sprite
+			frequenciaBots = 0;
 			bots.push(new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 20, h: 35}, "yellow", Math.PI));
-			//console.log(bots.length);
+			console.log(bots.length);
 		}
 	}
-
+	//movimento dos bots
 	function moverBot(){
 		for (var i = 0; i < bots.length; i++) {
 			bots[i].move(DT);
-			bots[i].draw(ctx);
+			bots[i].draw(ctx);//desenha os bots
+			if(bots[i].isForaTelaBot()){//verifica se estao saindo da tela
+				bots.splice(i, 1);
+			}
 		}
 	}
-	//verifica a colisao das naves
+	//verifica a colisao entre naves
 	function colideNave(s1, s2){
 		if(s1.center.x+(s1.size.w/2) >= s2.center.x-(s2.size.w/2) &&
 			s1.center.x-(s1.size.w/2) <= s2.center.x+(s2.size.w/2) &&
@@ -136,12 +139,13 @@ function start() {
 
 		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
 		//ganhador = 0;
-		bar.energy = 1.0;
+		bots.length = 0;//apaga todos os bots
+		bar.energy = 1.0;//reseta a vida da nave
 	}; reset();
 	//regra do jogo
 	var loop = function() {
 		if(inicio && !pause && recomeca){
-		ctx.clearRect(0, 0, WIDTH, HEIGHT);
+		ctx.clearRect(0, 0, WIDTH, HEIGHT);//limpa a tela
 
 		//texto da tela do jogo
 		texto.raster(ctx, "Vida:", 10, 20);
@@ -170,7 +174,7 @@ function start() {
 		//instancia novos bots
 		criaBot();
 
-		//Verifica colisao dos tiros com o bot
+		//Verifica colisao dos tiros com os bots
 		for(var i = 0; i < shots.length; i++){
 			for (var j = 0; j < bots.length; j++) {
 				if(((shots[i].pos.x >= bots[j].center.x-bots[j].size.w) && (shots[i].pos.x <= bots[j].center.x+bots[j].size.w)) &&
@@ -193,7 +197,7 @@ function start() {
 			shots[cont].movexUp(DT);
 			//Apaga os tiros que saem da tela
 			//if(shots[cont].pos.y < 0 || shots[cont].pos.x < 0 || shots[cont].pos.x > WIDTH || shots[cont].pos.y > HEIGHT){// impõe limites
-			if(shots[cont].isForaTela()){
+			if(shots[cont].isForaTela()){//verifica se o tiro saiu da tela
 				shots.splice(cont, 1);// remove o tiro do vetor
 				//verificaPontos1 = false;// liga novamente o contador
 			}
@@ -208,7 +212,7 @@ function start() {
 			//verificaPontos2 = false;// liga novamente o contador
 			}
 		}
-		//Movimenta as naves
+		//Movimenta a nave e os inimigos
 		shooter1.move(DT);
 		//console.log(shooter1.rotacao);
 		moverBot();
@@ -224,7 +228,7 @@ function start() {
 			recomeca = false;
 			reset();
 		}
-
+		//verifica a colisao entre o player e os bots
 		for (var i = 0; i < bots.length; i++) {
 			if(colideNave(shooter1, bots[i])){
 				bots.splice(i, 1);

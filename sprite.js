@@ -149,31 +149,63 @@ function Shooter(center, size, color, rotacao) {
 
 		ctx.restore();
 	}
-	//move a nave
-	this.move = function(dt) {
-		//limite das naves na tela
-		//limite lateral //500 tam da tela
+	//
+	this.isForaTela = function() {
+		//limite da lateral //500 tam da tela
 		if (this.center.x < this.size.w/2) {
 			this.center.x = this.size.w/2;
+			return true;
 		}if (this.center.x > 500-this.size.w/2) {
 			this.center.x = 500-this.size.w/2;
+			return true;
+		}//limite de cima de baixo
+		if (this.center.y < this.size.h/2) {
+			this.center.y = this.size.h/2;
+			return true;
+		}if (this.center.y > 500-this.size.h/2) {
+			this.center.y = 500-this.size.h/2;
+			return true;
 		}
+		return false;
+	}
 
-		if(this.rotacao == 2*Math.PI){
+	//
+	this.isForaTelaBot = function() {
+		if (this.center.x < this.size.w/2) {
+			this.center.x = this.size.w/2;
+			return true;
+		}if (this.center.x > 500-this.size.w/2) {
+			this.center.x = 500-this.size.w/2;
+			return true;
+		}//limite de baixo
+		if (this.center.y > 500-this.size.h/2) {
+			this.center.y = 500-this.size.h/2;
+			return true;
+		}
+		return false;
+	}
+
+	//move a nave
+	this.move = function(dt) {
+		if(this.rotacao == 2*Math.PI && !(this.isForaTela())){
 			//limite cima e baixo
-			if (this.center.y < this.size.h) {
+			/*if (this.center.y < this.size.h) {
 				this.center.y = this.size.h;
 			}if (this.center.y > 500-this.size.h/2) {
 				this.center.y = 500-this.size.h/2;
-			}
+			}*/
 
 			//posiciona o tiro na ponta da nave e define a direcao
-			this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
-			this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
+			//this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
+			//this.ballPos.x = this.center.x + (this.size.h / 2);
+			this.ballPos.x = this.center.x;
+			//this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
+			this.ballPos.y = this.center.y - (this.size.h / 2);
 			//move a nave
 	    this.center.x += this.vx * dt;
 	    this.center.y += this.vy * dt;
-		}else {//controle dos bots
+		}else if (this.rotacao == Math.PI) {
+			//controle dos bots
 			this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
 			this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
 
