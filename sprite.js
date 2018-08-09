@@ -19,20 +19,16 @@ function Size(w, h) {
 }
 //tiros dos bots
 function ShotBot(pos, r) {
-	//this.pos = {_x, _y};
 	this.pos = pos;
-	//this.vel = {_vx, _vy};
 	this.radius = r;
 	//desenha os tiros
 	this.draw = function(ctx) {
 		ctx.fillStyle   = "#f6ff00";
-		ctx.strokeStyle = "#ff0000";
+		ctx.strokeStyle = "#ff00bb";
 		ctx.beginPath();
 			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);
 		ctx.closePath();
 		ctx.fill();
-		//console.log("a");
-		//console.log(this.pos);
 	}
 	this.isForaTela = function(){
 		if(this.pos.y < 0 || this.pos.x < 0 || this.pos.x > 500 || this.pos.y > 500){
@@ -55,42 +51,12 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 	//desenha os tiros
 	this.draw = function(ctx) {
 		ctx.fillStyle   = "#f6ff00";
-		ctx.strokeStyle = "#ff0000";
+		ctx.strokeStyle = "#ff00bb";
 		ctx.beginPath();
 			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);
 		ctx.closePath();
 		ctx.fill();
-		//console.log("a");
-		//console.log(this.pos);
 	}
-	//move os tiros
-	/*this.move = function(dt, g) {
-		if(dir == 0){
-			this.pos.x += this.vel.vx * dt;
-			this.pos.y += this.vel.vy * dt;
-		}else if (dir == 1) {
-			this.pos.x += this.vel.vx * dt;
-			this.pos.y += this.vel.vy * dt;
-		}
-		//console.log(this.pos);
-	}
-	//cria o vetor de velocidade do tiro
-	this.setVelocityVector = function(o, _mag) {
-		if(dir == 0){
-			var mag = _mag || 325;
-		}if (dir == 1) {
-			var mag = _mag || 325;
-		}
-
-		var d = this.pos;
-		var norm = Math.sqrt( Math.pow(d.x - o.x, 2) + Math.pow(o.y - d.y, 2) );
-
-		this.vel = {vx: (d.x - o.x)/norm, vy: (d.y - o.y)/norm};
-		this.vel.vx *= mag;
-		this.vel.vy *= mag;
-		//console.log(this.vel);
-	}*/
-
 	//Verifica se o tiro saiu da tela
 	this.isForaTela = function(){
 		if(this.pos.y < 0 || this.pos.x < 0 || this.pos.x > 500 || this.pos.y > 500){
@@ -104,40 +70,6 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 			this.pos.y -= 300 * dt;
 		}
 	}
-
-	this.movexDown = function(dt){
-		if (!(this.isForaTela())) {
-			this.pos.y += 3 * dt;
-		}
-	}
-
-	/*this.moveyDir = function(dt){
-		if (!(this.isForaTela())) {
-			this.pos.x += 300 * dt;
-		}
-	}
-
-	this.moveyEsq = function(dt){
-		if (!(this.isForaTela())) {
-			this.pos.x -= 300 * dt;
-		}
-	}*/
-	//define a direcao do movimento do tiro
-	/*this.move = function(dt){
-		if (this.angle == 90 || this.angle == -270) {
-			this.movexUp(dt);
-		}if (this.angle == -90 || this.angle == 270) {
-			this.movexDown(dt);
-		}if (this.angle == 180 || this.angle == -180) {
-			this.moveyDir(dt);
-		}if (this.angle == 0) {
-			this.moveyEsq(dt);
-		}
-		if (this.dir == 1) {
-			this.movexUp(dt);
-		}
-	}*/
-	//2*Math.PI
 }
 
 //naves
@@ -145,7 +77,6 @@ function Shooter(center, size, color, rotacao, image) {
 	this.center = center || {x: 0, y: 0};
 	this.size  = size || {w: 50, h: 50};
 	this.theta = 0;
-	//this.omega = 0;
   this.vx = 0;
   this.vy = 0;
 	this.color = " ";
@@ -153,17 +84,18 @@ function Shooter(center, size, color, rotacao, image) {
 	this.pontos = 0;
 	this.cadenciaTiro = 0;
 	this.sprite = image;
-
+	//mostra a localizacao da nave ao tiro
 	this.ballPos = {x: this.center.x, y: this.center.y - this.size.h / 2};
 	//desenha a nave
 	this.draw = function(ctx) {
 		if(!ctx) return;// somente desenha se existe contexto
 
 		ctx.save();
+		//reposiciona a origem (0,0) no contexto
 		ctx.translate(this.center.x, this.center.y);
-		ctx.rotate(rotacao);
-		//cor
-		ctx.fillStyle = color;
+		ctx.rotate(rotacao);//rotaciona o sprite
+		ctx.fillStyle = color;//cor
+		//mostra o triangulo base do sprite
 		/*ctx.strokeStyle = "#00ff26";
 		ctx.beginPath();
 			ctx.moveTo(-this.size.w / 2, this.size.h / 2);
@@ -202,13 +134,13 @@ function Shooter(center, size, color, rotacao, image) {
 
 	//verifica se bot saiu da tela
 	this.isForaTelaBot = function() {
-		if (this.center.x < this.size.w/2) {
+		/*if (this.center.x < this.size.w/2) {
 			this.center.x = this.size.w/2;
 			return true;
 		}if (this.center.x > 500-this.size.w/2) {
 			this.center.x = 500-this.size.w/2;
 			return true;
-		}//limite de baixo
+		}*///limite de baixo
 		if (this.center.y > 500-this.size.h/2) {
 			this.center.y = 500-this.size.h/2;
 			return true;
@@ -218,11 +150,11 @@ function Shooter(center, size, color, rotacao, image) {
 
 	//move os bots
 	this.moveBot = function(dt, id) {
+		//mostra a localizacao do inimigo para o tiro
 		this.ballPos.x = this.center.x + (this.size.h / 2) * Math.sin(this.theta);
 		this.ballPos.y = this.center.y - (this.size.h / 2) * Math.cos(this.theta);
-
+		//controle da cadencia
 		this.cadenciaTiro += 1 * dt;
-
 		//acelera os bots que acabaram de entrar no jogo
 		if(this.center.y < 100){
 			this.center.x += 0;
@@ -260,6 +192,5 @@ function Shooter(center, size, color, rotacao, image) {
 			this.life = 1;
 			this.pontos = 0;
 		}
-
 	}
 }

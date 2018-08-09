@@ -15,7 +15,6 @@ var pause = false;
 var inicio = false;
 
 var texto = new Text();
-//var texto2 = new Text("Courier", 20, "red");
 //Imagens do jogo
 var fundo = new Image();
 fundo.src = "img/fundo.jpg";
@@ -25,13 +24,7 @@ spritePlayer.src = "img/Nave1.png";
 
 var spriteBot = new Image();
 spriteBot.src = "img/Nave2.png";
-
-/*var mostraFundo = function(ctx, fundo){
-	ctx.drawImage(fundo, 0, 0);
-}*/
-//var ganhador = 0;
-
-//sons
+//sons do jogo
 var musica = new Audio("sound/war.m4a");
 
 var tiro1 = new Audio();
@@ -41,12 +34,14 @@ tiro2.src = "sound/tiro_forte.mp3";
 
 var atira1 = function(){
 	tiro1.volume = 1.0;
+	tiro1.pause();
 	tiro1.load();
 	tiro1.play();
 }
 
 var atira2 = function(){
-	tiro2.volume = 0.2;
+	tiro2.volume = 0.3;
+	tiro2.pause();
 	tiro2.load();
 	tiro2.play();
 }
@@ -61,9 +56,6 @@ function start() {
 	const FPS = 60;
 	const DT = 1/FPS;
 	const G = -20;
-
-	//const PTSMAX = 2; // pontuacao que encerra o jogo
-
 	//toca a musica de fundo em loop
 	musica.volume = 1.0;
 	musica.play();
@@ -78,12 +70,10 @@ function start() {
 	var shooter1 = new Shooter({x: 0, y: 0}, {w: 30, h: 35}, "black", 2*Math.PI, spritePlayer);
 	//tiros do player
 	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.center.h), 0, 325, 12, 1);
-  //var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
 
 	var bots = [];//vetor de inimigos
 
 	var frequenciaBots = 0;//determina a frequencia de novos inimigos
-	//var cadenciaTiro = 0;
 	var movimentoBot = null;
 	//cria o identificador de movimento dos bots
 	function defineMovimento(bot){
@@ -127,54 +117,42 @@ function start() {
 			}
 			return false;
 	}
-
+	//cria a barra de vida
 	var bar = { pos: new Point(75, 7), size: new Size(410, 15), energy: 1.0 };
-
+	//cria variaveis de controle
 	var recomeca = true;
 	var verificaInicio = false;
-
+	//define o texto dos "menus"
 	var msgInicio = new Text("Courier", 30, "black");
 	var msg = new Text("Courier", 25, "#00ff19");
 
 	function atira(){
-		//ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
-		//ball2.setVelocityVector(shooter2.center); // ajusta a velocidade da bala
-		//shots2.push(ball2); // adiciona a bala no vetor de tiros
-		//ball2 = null; // apaga a bala auxiliar
-		//shoot2 = true;// bloqueia a repeticao do tiro
-
 		for (var i = 0; i < bots.length; i++) {
 			if (bots[i].cadenciaTiro > 1.8) {//controla o tempo entre os tiros
 				bots[i].cadenciaTiro = 0;
 				var ballBot = new ShotBot({x:bots[i].ballPos.x, y:bots[i].ballPos.y+bots[i].size.h}, {vx:0, vy:0}, 12);
 				shotsBot.push(ballBot);
-				//console.log(shotsBot.length);
-				//console.log(ballBot.pos);
+				atira2();
 				ballBot = null;
 			}
 		}
 	}
-
 	//reset do jogo
 	function reset() {
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);// limpa a tela do jogo
 		// limpa os tiros da tela
 		shots.length = 0;
 		shotsBot.length = 0;
-		if(!recomeca){
+		if(!recomeca){//mantem a mensagem na tela
 				musica.pause();
-				//ctx.fillStyle = "light-green";
 				msgInicio.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
 				msgInicio.raster(ctx, "Aperte R para continuar", WIDTH/8, HEIGHT/2 );
 			}
 		verificaInicio = true;
-		//reposiciona a nave
-		//var spawn = WIDTH*Math.random()*Math.random();
 		//coloca a nave na posicao inicial
 		shooter1.center = {x: WIDTH/2, y: HEIGHT-shooter1.size.h};
-
-		shooter1.reset();//volta as propriedades do shooter ao padrao do inicio
-		//ganhador = 0;
+		//volta as propriedades do shooter ao padrao do inicio
+		shooter1.reset();
 		bots.length = 0;//apaga todos os bots
 		bar.energy = 1.0;//reseta a vida da nave
 	}; reset();
@@ -184,17 +162,14 @@ function start() {
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);//limpa a tela
 		//desenha o fundo do jogo
 		ctx.drawImage(fundo, 0, 0);
-
 		//texto da tela do jogo
 		texto.raster(ctx, "Vida:", 10, 20);
 		texto.raster(ctx, "Pontos: " + shooter1.pontos, 10, 40);
 
-		musica.play();
-
+		musica.play();//toca a musica do jogo
 		//controle visual da barra de vida
 		ctx.strokeStyle = "#a0afa1";//Controla a borda
 		if(bar.energy<=0.2){//Controla a cor
-			//ctx.fillStyle = "light-green";
 			texto.raster(ctx, "Vida baixa!", bar.size.w/2, 20);
 			ctx.fillStyle = "#ff1000";
 		}else if(bar.energy>0.2 && bar.energy<=0.4){
@@ -206,10 +181,9 @@ function start() {
 		}else {
 			ctx.fillStyle = "#00ff15";
 		}
-
+		//desenha a barra no ctx
 		ctx.fillRect(bar.pos.x, bar.pos.y, bar.energy * bar.size.w, bar.size.h);
     ctx.strokeRect(bar.pos.x, bar.pos.y, bar.size.w, bar.size.h);
-
 		//instancia novos bots
 		criaBot();
 		atira();
@@ -218,8 +192,6 @@ function start() {
 			for (var j = 0; j < bots.length; j++) {
 				if(((shots[i].pos.x >= bots[j].center.x-bots[j].size.w) && (shots[i].pos.x <= bots[j].center.x+bots[j].size.w)) &&
 				((shots[i].pos.y >= bots[j].center.y-bots[j].size.h) && (shots[i].pos.y <= bots[j].center.y+bots[j].size.h))) {
-					//shooter2.life--;
-					//bots[j].center.y = 0;
 					shots.splice(i, 1);//apaga os tiros que colidiram
 					bots.splice(j, 1);
 					shooter1.pontos++;
@@ -227,59 +199,43 @@ function start() {
 				}
 			}
 		}
-
 		//Verifica colisao dos tiros com o player
 		for(var i = 0; i < shotsBot.length; i++){
 				if(((shotsBot[i].pos.x >= shooter1.center.x-shooter1.size.w) && (shotsBot[i].pos.x <= shooter1.center.x+shooter1.size.w)) &&
 				((shotsBot[i].pos.y >= shooter1.center.y-shooter1.size.h) && (shotsBot[i].pos.y <= shooter1.center.y+shooter1.size.h))) {
-					//shooter2.life--;
-					//bots[j].center.y = 0;
 					shotsBot.splice(i, 1);//apaga os tiros que colidiram
-					//bots.splice(j, 1);
-					//shooter1.pontos++;
 					bar.energy -= 0.1;
 					break;
 				}
 		}
-
 		//contadores para o for do tiro
 		var cont, cont2;
 		//tiros player 1
 		for(cont = 0; cont < shots.length; cont++) {
-			//shots[cont].move(DT, G);
 			shots[cont].movexUp(DT);
 			//Apaga os tiros que saem da tela
-			//if(shots[cont].pos.y < 0 || shots[cont].pos.x < 0 || shots[cont].pos.x > WIDTH || shots[cont].pos.y > HEIGHT){// impõe limites
 			if(shots[cont].isForaTela()){//verifica se o tiro saiu da tela
 				shots.splice(cont, 1);// remove o tiro do vetor
-				//verificaPontos1 = false;// liga novamente o contador
 			}
 		}
 		//tiros bots
 		for(cont2 = 0; cont2 < shotsBot.length; cont2++) {
-			//shots2[cont2].move(DT, G);
 			shotsBot[cont2].movexDown(DT);
 			//Apaga os tiros que saem da tela
 			if(shotsBot[cont2].isForaTela()){// impõe limites
 				shotsBot.splice(cont2, 1);// remove o tiro do vetor
-			//verificaPontos2 = false;// liga novamente o contador
 			}
 		}
 		//Movimenta a nave e os inimigos
 		shooter1.move(DT);
-		//console.log(shooter1.rotacao);
 		moverBot();
-
 		//desenha os tiros na tela
 		shots.forEach( function(shot) { shot.draw(ctx); } );
 		shotsBot.forEach( function(shotBot) { shotBot.draw(ctx); } );
 		//desenha as naves na tela
 		shooter1.draw(ctx);
-		//shooter2.draw(ctx);
-
-
-
-		if(bar.energy <= 0.0){// fim de jogo
+		// determina o fim de jogo
+		if(bar.energy <= 0.0){
 			recomeca = false;
 			reset();
 		}
@@ -304,11 +260,10 @@ function start() {
 	addEventListener("keydown", function(e){
 		if(e.keyCode == 32 && !shoot) { // Espaco, tiro player 1
 			ball.pos = {x: shooter1.ballPos.x, y: (shooter1.ballPos.y)}; // marca a posicao da bala
-			//ball.setVelocityVector(shooter1.center); // ajusta a velocidade da bala
 			shots.push(ball); // adiciona a bala no vetor de tiros
-			//console.log(ball);
 			ball = null; // apaga a bala auxiliar
 			shoot = true;// bloqueia a repeticao do tiro
+			atira1();// toca o som do tiro
 			e.preventDefault();
 		}if(e.keyCode == 37){ // esquerda player 1
 			shooter1.vx = -150;
@@ -331,26 +286,6 @@ function start() {
 		}if (e.keyCode == 82) {// R
 				recomeca = true;
 		}
-		/*if (e.keyCode == 87) {// W
-			shooter2.vy = -100;
-			e.preventDefault();
-		}
-		if (e.keyCode == 83) {// S
-			shooter2.vy = 100;
-			e.preventDefault();
-		}
-		if (e.keyCode == 65) {// A
-			shooter2.vx = -100;
-			e.preventDefault();
-		}
-		if (e.keyCode == 68) {// D
-			shooter2.vx = 100;
-			e.preventDefault();
-		}*/
-		if (e.keyCode == 16){// Shift Esq
-			//atira();
-			e.preventDefault();
-		}
 	});
 
 	addEventListener("keyup", function(e){
@@ -366,14 +301,5 @@ function start() {
       shooter1.ay = 0;
 			shooter1.vy = 0;
     }
-		/*if (e.keyCode == 87 || e.keyCode == 83) {// W e S
-			shooter2.vy = 0;
-		}
-		if (e.keyCode == 65 || e.keyCode == 68) {// A e D
-			shooter2.vx = 0;
-		}*/
-		if (e.keyCode == 16) {// Shift Esq
-			//carrega();
-		}
 	});
 }
