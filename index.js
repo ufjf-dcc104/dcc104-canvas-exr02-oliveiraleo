@@ -16,13 +16,19 @@ var inicio = false;
 
 var texto = new Text();
 //var texto2 = new Text("Courier", 20, "red");
-
+//Imagens do jogo
 var fundo = new Image();
 fundo.src = "img/fundo.jpg";
 
-var mostraFundo = function(ctx, fundo){
+var spritePlayer = new Image();
+spritePlayer.src = "img/Nave1.png";
+
+var spriteBot = new Image();
+spriteBot.src = "img/Nave2.png";
+
+/*var mostraFundo = function(ctx, fundo){
 	ctx.drawImage(fundo, 0, 0);
-}
+}*/
 //var ganhador = 0;
 
 //sons
@@ -69,7 +75,7 @@ function start() {
 	var shots = []; var shoot = false;
 	var shotsBot = []; //var shoot2 = false;
 	//cria a nave do player
-	var shooter1 = new Shooter({x: 0, y: 0}, {w: 20, h: 35}, "black", 2*Math.PI);
+	var shooter1 = new Shooter({x: 0, y: 0}, {w: 30, h: 35}, "black", 2*Math.PI, spritePlayer);
 	//tiros do player
 	var ball = new Shot(shooter1.ballPos.x, (shooter1.ballPos.y-shooter1.center.h), 0, 325, 12, 1);
   //var ball2 = new Shot(shooter2.ballPos.x, shooter2.ballPos.y, 0, -325, 12, 1);
@@ -94,7 +100,7 @@ function start() {
 		frequenciaBots = frequenciaBots + 1 * DT;
 		if(frequenciaBots > 2){//tempo em segundos para criar um novo sprite
 			frequenciaBots = 0;
-			var bot = new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 20, h: 35}, "yellow", Math.PI);
+			var bot = new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 45, h: 25}, "yellow", Math.PI, spriteBot);
 			movimentoBot = defineMovimento(bot);//quando cria um novo bot, altera os movimentos de todos
 			bots.push(bot);
 			//console.log(bots.length);
@@ -305,16 +311,16 @@ function start() {
 			shoot = true;// bloqueia a repeticao do tiro
 			e.preventDefault();
 		}if(e.keyCode == 37){ // esquerda player 1
-			shooter1.vx = -100;
+			shooter1.vx = -150;
 			e.preventDefault();
 		}if(e.keyCode == 39){ // direita player 1
-			shooter1.vx = 100;
+			shooter1.vx = 150;
 			e.preventDefault();
 		}if (e.keyCode == 38) { // cima player 1
-			shooter1.vy = -100;
+			shooter1.vy = -200;
 			e.preventDefault();
     }if (e.keyCode == 40) { // baixo player 1
-			shooter1.vy = 100;
+			shooter1.vy = 200;
 			e.preventDefault();
     }
     if(e.keyCode == 13){// Enter

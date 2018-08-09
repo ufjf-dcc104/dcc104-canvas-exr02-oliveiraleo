@@ -25,7 +25,7 @@ function ShotBot(pos, r) {
 	this.radius = r;
 	//desenha os tiros
 	this.draw = function(ctx) {
-		ctx.fillStyle   = "#ff7f00";
+		ctx.fillStyle   = "#f6ff00";
 		ctx.strokeStyle = "#ff0000";
 		ctx.beginPath();
 			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);
@@ -54,7 +54,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 	this.radius = r;
 	//desenha os tiros
 	this.draw = function(ctx) {
-		ctx.fillStyle   = "#ff7f00";
+		ctx.fillStyle   = "#f6ff00";
 		ctx.strokeStyle = "#ff0000";
 		ctx.beginPath();
 			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);
@@ -141,7 +141,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 }
 
 //naves
-function Shooter(center, size, color, rotacao) {
+function Shooter(center, size, color, rotacao, image) {
 	this.center = center || {x: 0, y: 0};
 	this.size  = size || {w: 50, h: 50};
 	this.theta = 0;
@@ -152,6 +152,7 @@ function Shooter(center, size, color, rotacao) {
 	this.rotacao = rotacao;
 	this.pontos = 0;
 	this.cadenciaTiro = 0;
+	this.sprite = image;
 
 	this.ballPos = {x: this.center.x, y: this.center.y - this.size.h / 2};
 	//desenha a nave
@@ -163,17 +164,19 @@ function Shooter(center, size, color, rotacao) {
 		ctx.rotate(rotacao);
 		//cor
 		ctx.fillStyle = color;
-		ctx.strokeStyle = "#00ff26";
+		/*ctx.strokeStyle = "#00ff26";
 		ctx.beginPath();
 			ctx.moveTo(-this.size.w / 2, this.size.h / 2);
 			ctx.lineTo(this.size.w / 2,  this.size.h / 2);
 			ctx.lineTo(0, -this.size.h / 2);
 		ctx.closePath();
 		ctx.fill();
-		ctx.stroke();
+		ctx.stroke();*/
 		//mostra as caixas de colisao das naves
 	  ctx.strokeStyle = "grey";
 	  ctx.strokeRect(-this.size.w/2, -this.size.h/2, this.size.w, this.size.h);
+
+		ctx.drawImage(this.sprite, -this.size.w/2, -this.size.h/2, this.size.w, this.size.h);
 
 		ctx.restore();
 	}
