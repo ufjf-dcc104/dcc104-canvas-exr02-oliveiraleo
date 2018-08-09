@@ -25,7 +25,7 @@ function ShotBot(pos, r) {
 	this.radius = r;
 	//desenha os tiros
 	this.draw = function(ctx) {
-		ctx.fillStyle   = "#000000";
+		ctx.fillStyle   = "#ff7f00";
 		ctx.strokeStyle = "#ff0000";
 		ctx.beginPath();
 			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);
@@ -54,7 +54,7 @@ function Shot(_x, _y, _vx, _vy, r, dir) {
 	this.radius = r;
 	//desenha os tiros
 	this.draw = function(ctx) {
-		ctx.fillStyle   = "#000000";
+		ctx.fillStyle   = "#ff7f00";
 		ctx.strokeStyle = "#ff0000";
 		ctx.beginPath();
 			ctx.arc(this.pos.x, this.pos.y, 4, 0, 2 * Math.PI);

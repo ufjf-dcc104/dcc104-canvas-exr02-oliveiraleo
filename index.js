@@ -2,7 +2,7 @@
 function Text(font, size, rgb) {
 	this.font = font 	|| "Courier";
 	this.size = size 	|| 20;
-	this.color = rgb 	|| "#000000" ;
+	this.color = rgb 	|| "#00ff19" ;
 
 	this.raster = function(ctx, text, x, y) {
 		ctx.font = "" + this.size + "px " + this.font;
@@ -15,8 +15,14 @@ var pause = false;
 var inicio = false;
 
 var texto = new Text();
-var texto2 = new Text("Courier", 20, "red");
+//var texto2 = new Text("Courier", 20, "red");
 
+var fundo = new Image();
+fundo.src = "img/fundo.jpg";
+
+var mostraFundo = function(ctx, fundo){
+	ctx.drawImage(fundo, 0, 0);
+}
 //var ganhador = 0;
 
 //sons
@@ -51,6 +57,7 @@ function start() {
 	const G = -20;
 
 	//const PTSMAX = 2; // pontuacao que encerra o jogo
+
 	//toca a musica de fundo em loop
 	musica.volume = 1.0;
 	musica.play();
@@ -121,7 +128,7 @@ function start() {
 	var verificaInicio = false;
 
 	var msgInicio = new Text("Courier", 30, "black");
-	var msg = new Text("Courier", 25, "black");
+	var msg = new Text("Courier", 25, "#00ff19");
 
 	function atira(){
 		//ball2.pos = {x: shooter2.ballPos.x, y: shooter2.ballPos.y+shooter2.size.h}; // marca a posicao da bala
@@ -150,8 +157,9 @@ function start() {
 		shotsBot.length = 0;
 		if(!recomeca){
 				musica.pause();
-				msg.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
-				msg.raster(ctx, "Aperte R para continuar", WIDTH/6, HEIGHT/2 );
+				//ctx.fillStyle = "light-green";
+				msgInicio.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
+				msgInicio.raster(ctx, "Aperte R para continuar", WIDTH/8, HEIGHT/2 );
 			}
 		verificaInicio = true;
 		//reposiciona a nave
@@ -168,6 +176,8 @@ function start() {
 	var loop = function() {
 		if(inicio && !pause && recomeca){
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);//limpa a tela
+		//desenha o fundo do jogo
+		ctx.drawImage(fundo, 0, 0);
 
 		//texto da tela do jogo
 		texto.raster(ctx, "Vida:", 10, 20);
@@ -178,6 +188,7 @@ function start() {
 		//controle visual da barra de vida
 		ctx.strokeStyle = "#a0afa1";//Controla a borda
 		if(bar.energy<=0.2){//Controla a cor
+			//ctx.fillStyle = "light-green";
 			texto.raster(ctx, "Vida baixa!", bar.size.w/2, 20);
 			ctx.fillStyle = "#ff1000";
 		}else if(bar.energy>0.2 && bar.energy<=0.4){
@@ -273,6 +284,7 @@ function start() {
 				bar.energy -= 0.1;
 			}
 		}
+		//mostraFundo(ctx, fundo);
 	}else if(!inicio){// exibe a mensagem da tela inicial
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
 		msgInicio.raster(ctx, "Aperte ENTER para começar", 25, HEIGHT/2 );
