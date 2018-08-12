@@ -13,6 +13,7 @@ function Text(font, size, rgb) {
 //variaveis globais
 var pause = false;
 var inicio = false;
+var level = 1;
 
 var texto = new Text();
 //Imagens do jogo
@@ -88,6 +89,7 @@ function start() {
 	//cria novos bots
 	function criaBot(){
 		frequenciaBots = frequenciaBots + 1 * DT;
+		frequenciaBots /= level;
 		if(frequenciaBots > 2){//tempo em segundos para criar um novo sprite
 			frequenciaBots = 0;
 			var bot = new Shooter({x: Math.random()*WIDTH, y: 0}, {w: 45, h: 25}, "yellow", Math.PI, spriteBot);
@@ -145,6 +147,7 @@ function start() {
 		shotsBot.length = 0;
 		if(!recomeca){//mantem a mensagem na tela
 				musica.pause();
+				msgInicio.raster(ctx, "Você fez " + shooter1.pontos.toFixed(0) + " pontos", WIDTH/8, HEIGHT-(HEIGHT/3));
 				msgInicio.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
 				msgInicio.raster(ctx, "Aperte R para continuar", WIDTH/8, HEIGHT/2 );
 			}
@@ -155,6 +158,7 @@ function start() {
 		shooter1.reset();
 		bots.length = 0;//apaga todos os bots
 		bar.energy = 1.0;//reseta a vida da nave
+		level = 1;//reseta o nivel
 	}; reset();
 	//regra do jogo
 	var loop = function() {
@@ -164,7 +168,7 @@ function start() {
 		ctx.drawImage(fundo, 0, 0);
 		//texto da tela do jogo
 		texto.raster(ctx, "Vida:", 10, 20);
-		texto.raster(ctx, "Pontos: " + shooter1.pontos, 10, 40);
+		texto.raster(ctx, "Pontos: " + shooter1.pontos.toFixed(0), 10, 40);
 
 		musica.play();//toca a musica do jogo
 		//controle visual da barra de vida
@@ -245,6 +249,20 @@ function start() {
 				bots.splice(i, 1);
 				bar.energy -= 0.1;
 			}
+		}
+		//dispara a avalanche de bots
+		if (shooter1.pontos == 1) {
+			level = 0.8;
+		}
+		//desafio ao jogador
+		if (shooter1.pontos == 150) {
+			level = 0.5;
+		}
+		//ganho de recompensa
+		if(shooter1.pontos == 20 || shooter1.pontos == 50 || shooter1.pontos == 90){
+		//if(shooter1.pontos%2 == 0){
+			bar.energy = 1.0;
+			shooter1.pontos += 0.1;
 		}
 		//mostraFundo(ctx, fundo);
 	}else if(!inicio){// exibe a mensagem da tela inicial
