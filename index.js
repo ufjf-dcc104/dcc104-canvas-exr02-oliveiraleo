@@ -25,8 +25,18 @@ spritePlayer.src = "img/Nave1.png";
 
 var spriteBot = new Image();
 spriteBot.src = "img/Nave2.png";
+
+var imgMenu = new Image();
+imgMenu.src = "img/menu.png";
+
+var imgGameOver = new Image();
+imgGameOver.src = "img/gameover.png";
 //sons do jogo
-var musica = new Audio("sound/war.m4a");
+var musica = new Audio("sound/alien.mp3");
+var vidaBaixa = new Audio("sound/siren.mp3");
+var vidaRecarrega = new Audio("sound/powerup.mp3");
+var gameover = new Audio("sound/gameover.mp3");
+var menu = new Audio("sound/menu.mp3");
 
 var tiro1 = new Audio();
 tiro1.src = "sound/tiro.mp3";
@@ -57,10 +67,10 @@ function start() {
 	const FPS = 60;
 	const DT = 1/FPS;
 	const G = -20;
-	//toca a musica de fundo em loop
-	musica.volume = 1.0;
-	musica.play();
-	musica.addEventListener('ended', function() {
+	//toca a musica do menu em loop
+	menu.volume = 1.0;
+	menu.play();
+	menu.addEventListener('ended', function() {
 		this.currentTime = 0;
 		this.play();
 	});
@@ -125,7 +135,7 @@ function start() {
 	var recomeca = true;
 	var verificaInicio = false;
 	//define o texto dos "menus"
-	var msgInicio = new Text("Courier", 30, "black");
+	var msgInicio = new Text("Courier", 30, "white");
 	var msg = new Text("Courier", 25, "#00ff19");
 
 	function atira(){
@@ -141,15 +151,31 @@ function start() {
 	}
 	//reset do jogo
 	function reset() {
-		ctx.clearRect(0, 0, WIDTH, HEIGHT);// limpa a tela do jogo
+		//ctx.clearRect(0, 0, WIDTH, HEIGHT);// limpa a tela do jogo
 		// limpa os tiros da tela
 		shots.length = 0;
 		shotsBot.length = 0;
 		if(!recomeca){//mantem a mensagem na tela
-				musica.pause();
-				msgInicio.raster(ctx, "Você fez " + shooter1.pontos.toFixed(0) + " pontos", WIDTH/8, HEIGHT-(HEIGHT/3));
-				msgInicio.raster(ctx, "Game over!", WIDTH/8, HEIGHT/4);
-				msgInicio.raster(ctx, "Aperte R para continuar", WIDTH/8, HEIGHT/2 );
+				musica.pause();//pausa a musica do jogo
+				//inicia a musica de gameover
+				gameover.volume = 1.0;
+				gameover.currentTime = 0;
+				gameover.play();
+				gameover.addEventListener('ended', function() {
+					this.currentTime = 0;
+					this.play();
+				});
+				ctx.clearRect(0, 0, WIDTH, HEIGHT);
+				ctx.drawImage(imgGameOver, 0, 0);
+				msgInicio.raster(ctx, "Game over!", WIDTH/8, HEIGHT/8);
+				if(shooter1.pontos == 0){
+						msgInicio.raster(ctx, "Você não pontuou...", WIDTH/8, HEIGHT-(HEIGHT/5));
+				}if(shooter1.pontos == 1){
+						msgInicio.raster(ctx, "Você fez " + shooter1.pontos.toFixed(0) + " ponto", WIDTH/8, HEIGHT-(HEIGHT/5));
+				}if(shooter1.pontos > 1){
+						msgInicio.raster(ctx, "Você fez " + shooter1.pontos.toFixed(0) + " pontos", WIDTH/8, HEIGHT-(HEIGHT/5));
+				}
+				msgInicio.raster(ctx, "Aperte R para reiniciar", WIDTH/8, HEIGHT-10);
 			}
 		verificaInicio = true;
 		//coloca a nave na posicao inicial
@@ -159,23 +185,35 @@ function start() {
 		bots.length = 0;//apaga todos os bots
 		bar.energy = 1.0;//reseta a vida da nave
 		level = 1;//reseta o nivel
+		//menu.pause();
 	}; reset();
 	//regra do jogo
 	var loop = function() {
 		if(inicio && !pause && recomeca){
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);//limpa a tela
+		gameover.pause();
 		//desenha o fundo do jogo
 		ctx.drawImage(fundo, 0, 0);
 		//texto da tela do jogo
 		texto.raster(ctx, "Vida:", 10, 20);
 		texto.raster(ctx, "Pontos: " + shooter1.pontos.toFixed(0), 10, 40);
 
-		musica.play();//toca a musica do jogo
+		menu.pause();
+		//toca a musica de fundo em loop
+		musica.volume = 1.0;
+		musica.play();
+		musica.addEventListener('ended', function() {
+			this.currentTime = 0;
+			this.play();
+		});
+
+		//musica.play();//toca a musica do jogo
 		//controle visual da barra de vida
 		ctx.strokeStyle = "#a0afa1";//Controla a borda
 		if(bar.energy<=0.2){//Controla a cor
 			texto.raster(ctx, "Vida baixa!", bar.size.w/2, 20);
 			ctx.fillStyle = "#ff1000";
+			vidaBaixa.play();
 		}else if(bar.energy>0.2 && bar.energy<=0.4){
 			ctx.fillStyle = "#a51309";
 		}else if(bar.energy>0.4 && bar.energy<=0.7){
@@ -263,11 +301,16 @@ function start() {
 		//if(shooter1.pontos%2 == 0){
 			bar.energy = 1.0;
 			shooter1.pontos += 0.1;
+			vidaRecarrega.play();
 		}
 		//mostraFundo(ctx, fundo);
 	}else if(!inicio){// exibe a mensagem da tela inicial
 		ctx.clearRect(0, 0, WIDTH, HEIGHT);
-		msgInicio.raster(ctx, "Aperte ENTER para começar", 25, HEIGHT/2 );
+		ctx.drawImage(imgMenu, 0, 0);
+		msgInicio.raster(ctx, "Um dia os aliens tentaram", 5, 30 );
+		msgInicio.raster(ctx, "dominar a terra...", 5, 60);
+		msgInicio.raster(ctx, "Aperte ENTER para começar", 25, HEIGHT-(HEIGHT/3));
+
 	}else if(pause){// exibe a mensagem de jogo pausado
 		msg.raster(ctx, "Aperte P para continuar", (WIDTH/6), HEIGHT/2 );
 	}
@@ -303,6 +346,7 @@ function start() {
 				pause = !pause;
 		}if (e.keyCode == 82) {// R
 				recomeca = true;
+				musica.currentTime = 0;
 		}
 	});
 

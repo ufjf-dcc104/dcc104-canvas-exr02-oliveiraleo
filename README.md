@@ -7,3 +7,7 @@ Enter: Inicia a partida
 P: Pausa o jogo
 
 R: Reinicia o jogo
+
+Setas: Movem a nave
+
+Espaco: Atira
